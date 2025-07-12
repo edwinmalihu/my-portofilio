@@ -1,21 +1,18 @@
-# Gunakan image Nginx resmi sebagai base image
+# Tahap 1: Gunakan base image Nginx yang sangat ringan dari Alpine Linux.
+# Ini memastikan image Docker yang dihasilkan kecil dan efisien.
 FROM nginx:alpine
 
-# Hapus file konfigurasi default Nginx
-# Ini opsional, tapi baik untuk memastikan tidak ada konfigurasi yang tidak diinginkan
-RUN rm /etc/nginx/conf.d/default.conf
+# Tentukan direktori kerja di dalam container, yaitu web root default Nginx.
+WORKDIR /usr/share/nginx/html
 
-# Salin file konfigurasi Nginx kustom Anda
-# Ini akan mengarahkan Nginx untuk melayani file statis dari direktori yang benar
-COPY nginx.conf /etc/nginx/conf.d/
+# Salin file aplikasi utama Anda.
+COPY index.html .
 
-# Salin semua file statis (HTML, CSS, JS) dari direktori lokal ke direktori web root Nginx
-# Pastikan semua file portofolio Anda (index.html, style.css, script.js, dll.)
-# berada di direktori yang sama dengan Dockerfile ini, atau sesuaikan path-nya.
-COPY . /usr/share/nginx/html
-
-# Ekspos port 80, yang merupakan port default Nginx
+# (Opsional) Memberi tahu Docker bahwa container akan berjalan di port 80,
+# yang merupakan port default untuk Nginx.
 EXPOSE 80
 
-# Perintah default untuk menjalankan Nginx saat container dimulai
+# Perintah untuk menjalankan server Nginx saat container dimulai.
+# Opsi '-g "daemon off;"' memastikan Nginx berjalan di foreground,
+# yang merupakan praktik terbaik untuk container.
 CMD ["nginx", "-g", "daemon off;"]
